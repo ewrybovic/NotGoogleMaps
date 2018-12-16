@@ -11,6 +11,8 @@
     Package name:
     94:B1:EE:ED:2F:F7:40:2B:05:7A:FF:BC:33:22:E4:28:52:C0:0D:FC
 
+    com.example.evanr.notgooglemaps
+
     SHA-1 certificate fingerprint:
     94:B1:EE:ED:2F:F7:40:2B:05:7A:FF:BC:33:22:E4:28:52:C0:0D:FC
 
@@ -20,5 +22,5 @@
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
-    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">YOUR_KEY_HERE</string>
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">AIzaSyCqyN2cYo9RP_Sb8lvTavSt9ppY8RMISig</string>
 </resources>
