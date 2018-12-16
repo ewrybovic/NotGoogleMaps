@@ -13,12 +13,9 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
 
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONObject
@@ -86,6 +83,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     // Add Markers
                     mMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
                     mMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
+
+                    // Add Line
+                    var polyline = mMap.addPolyline(PolylineOptions()
+                        .add(firstLatLng, secondLatLng)
+                    );
 
                     // margin between end of screen and the bounds
                     val padding = 125
