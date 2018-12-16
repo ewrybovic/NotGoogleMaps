@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NotGoogleMaps</string>
+    <string name="enter_first_location">Enter First Location</string>
+    <string name="enter_second_location">Enter Second location</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="go">Go</string>
+</resources>
