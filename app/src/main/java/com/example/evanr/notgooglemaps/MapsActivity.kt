@@ -55,7 +55,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 // Threadsafe call to move the map
                 uiThread {
                     Toast.makeText(this@MapsActivity, "Centering on First Location", Toast.LENGTH_LONG ).show()
-                    mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngOrigin, 14.5f))
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngOrigin, 14.5f))
                 }
             }
             else{
