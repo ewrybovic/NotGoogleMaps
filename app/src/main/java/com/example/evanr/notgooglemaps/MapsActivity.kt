@@ -14,6 +14,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    private var firstLocation: String = ""
+    private var secondLocation: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         val intent = intent
-        Toast.makeText(this, intent.getStringExtra("firstLocation"), Toast.LENGTH_LONG).show()
+        firstLocation = intent.getStringExtra("firstLocation")
+        secondLocation = intent.getStringExtra("secondLocation")
+
+        Toast.makeText(this, firstLocation + " "+ secondLocation, Toast.LENGTH_LONG).show()
     }
 
     /**
