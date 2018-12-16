@@ -88,7 +88,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
 
                     // margin between end of screen and the bounds
-                    val padding = 75
+                    val padding = 125
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
                 }
