@@ -2,6 +2,7 @@ package com.example.evanr.notgooglemaps
 
 import android.graphics.Color
 import android.os.AsyncTask
+import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -63,6 +64,9 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
         val activity = parentActivity.get()
 
         if (result == true) {
+            // Log the request url cause I want to see it
+            Log.e("Async", directionsRequest.toString())
+
             // Add the polylines to the map
             for (i in 0 until path.size) {
                 activity!!.mMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED))
