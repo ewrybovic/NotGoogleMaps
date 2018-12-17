@@ -1,31 +1,19 @@
 package com.example.evanr.notgooglemaps
 
-import android.graphics.Color
-import android.icu.util.ULocale
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import android.location.Geocoder
-import android.renderscript.ScriptGroup
-import android.util.Log
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import com.google.maps.android.PolyUtil
 
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import org.json.JSONObject
-import java.lang.Math.pow
-import java.lang.Math.sqrt
 import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    lateinit var mMap: GoogleMap
     private var firstLocation: String = ""
     private var secondLocation: String = ""
     private var directionRequest: String = ""
@@ -84,15 +72,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
                     mMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
 
-                    // Add Line
-                    var polyline = mMap.addPolyline(PolylineOptions()
-                        .add(firstLatLng, secondLatLng)
-                    );
-
                     // margin between end of screen and the bounds
                     val padding = 125
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+
+                    // get the directions in an asyncTask, for some reason it won't work in this
+                    val task = GetDirectionsTask(this@MapsActivity)
+                    task.execute(createUrlDirection(firstLatLng, secondLatLng))
                 }
             }
             else{
@@ -105,12 +92,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // Creates the url for the directions, not the best way lol
-    fun createUrlDirection(originLat: Double, originLng: Double, destLat: Double, destLng: Double): String{
+    fun createUrlDirection(origin: LatLng, dest: LatLng): String{
         var urlDirection = "https://maps.googleapis.com/maps/api/directions/json?origin="
-        urlDirection += originLat.toString() + ","
-        urlDirection += originLng.toString() + "&destination="
-        urlDirection += destLat.toString() + ","
-        urlDirection += destLng.toString() + "&key="
+        urlDirection += origin.latitude.toString() + ","
+        urlDirection += origin.longitude.toString() + "&destination="
+        urlDirection += dest.latitude.toString() + ","
+        urlDirection += dest.longitude.toString() + "&key="
         urlDirection += getString(R.string.google_maps_key)
         return urlDirection
     }
