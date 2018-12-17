@@ -11,6 +11,7 @@ import com.android.volley.toolbox.Volley
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.PolyUtil
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
@@ -18,7 +19,9 @@ import java.lang.ref.WeakReference
 class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void, Boolean>() {
 
     private var path: MutableList<List<LatLng>> = ArrayList()
-    private var parentActivity: WeakReference<MapsActivity>
+    private var instructions: MutableList<String> = ArrayList()
+    private val parentActivity: WeakReference<MapsActivity>
+    private lateinit var steps: JSONArray
     private lateinit var directionsRequest: StringRequest
 
     init {
@@ -36,12 +39,18 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
                 // Get routes
                 val routes = jsonResponse.getJSONArray("routes")
                 val legs = routes.getJSONObject(0).getJSONArray("legs")
-                val steps = legs.getJSONObject(0).getJSONArray("steps")
+                steps = legs.getJSONObject(0).getJSONArray("steps")
 
                // For every step add them to the path variable
                 for (i in 0 until steps.length()) {
+                    // Parse the point to draw on the map
                     val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                    // Parse teh step instructions
+                    val step = steps.getJSONObject(i).getString("html_instructions")
+
+                    // Add the values to the list
                     path.add(PolyUtil.decode(points))
+                    instructions.add(step)
                 }
                didComplete = true
             }, Response.ErrorListener {
@@ -66,6 +75,8 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
         if (result == true) {
             // Log the request url cause I want to see it
             Log.e("Async", directionsRequest.toString())
+            
+            activity!!.instructions = instructions
 
             // Add the polylines to the map
             for (i in 0 until path.size) {

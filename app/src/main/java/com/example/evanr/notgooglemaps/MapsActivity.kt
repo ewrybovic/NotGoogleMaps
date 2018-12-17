@@ -14,9 +14,9 @@ import java.util.*
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     lateinit var googleMap: GoogleMap
+    var instructions: MutableList<String> = ArrayList()
     private var firstLocation: String = ""
     private var secondLocation: String = ""
-    private var directionRequest: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
