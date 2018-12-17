@@ -13,7 +13,7 @@ import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    lateinit var mMap: GoogleMap
+    lateinit var googleMap: GoogleMap
     private var firstLocation: String = ""
     private var secondLocation: String = ""
     private var directionRequest: String = ""
@@ -34,7 +34,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        this.googleMap = googleMap
 
         // Geocoder tanslates an address to a latitude and longitude location
         val geocoder = Geocoder(this, Locale.getDefault())
@@ -69,13 +69,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     Toast.makeText(this@MapsActivity, "Zooming to Location", Toast.LENGTH_LONG ).show()
 
                     // Add Markers
-                    mMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
-                    mMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
+                    googleMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
+                    googleMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
 
                     // margin between end of screen and the bounds
-                    val padding = 125
+                    val padding = 135
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
 
                     // get the directions in an asyncTask, for some reason it won't work in this
                     val task = GetDirectionsTask(this@MapsActivity)

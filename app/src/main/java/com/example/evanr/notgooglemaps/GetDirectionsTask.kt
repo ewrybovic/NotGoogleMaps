@@ -69,7 +69,7 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
             // Add the polylines to the map
             for (i in 0 until path.size) {
-                activity!!.mMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED))
+                activity!!.googleMap.addPolyline(PolylineOptions().addAll(path[i]).color(Color.RED))
             }
         }
         else{
