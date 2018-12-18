@@ -32,34 +32,35 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
     // IDK how to get this to work without having a return type
     override fun doInBackground(vararg urlDirections: String?): Boolean {
-        var didComplete: Boolean = false
-       directionsRequest = object : StringRequest(
-            Request.Method.GET, urlDirections[0], Response.Listener<String> {
-                    response ->
-                val jsonResponse = JSONObject(response)
-                // Get routes
-                val routes = jsonResponse.getJSONArray("routes")
-                val legs = routes.getJSONObject(0).getJSONArray("legs")
-                steps = legs.getJSONObject(0).getJSONArray("steps")
+        var didComplete = false
+        directionsRequest = object : StringRequest(
+            Request.Method.GET, urlDirections[0], Response.Listener<String> { response ->
+                //val jsonResponse = JSONObject(response)
+                val routes = JSONObject(response).getJSONArray("routes")
 
-               // For every step add them to the path variable
-                for (i in 0 until steps.length()) {
-                    // Parse the point to draw on the map
-                    val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-                    // Parse teh step instructions
-                    val step = steps.getJSONObject(i).getString("html_instructions")
-                    val dist = steps.getJSONObject(i).getJSONObject("distance").getString("text")
+                // Check if there was an error with the request
+                if (routes.length() > 0) {
+                    val legs = routes.getJSONObject(0).getJSONArray("legs")
+                    steps = legs.getJSONObject(0).getJSONArray("steps")
 
-                    // Add the values to the list
-                    path.add(PolyUtil.decode(points))
-                    instructions.add(step)
-                    distances.add(dist)
+                    // For every step add them to the path variable
+                    for (i in 0 until steps.length()) {
+                        // Parse the point to draw on the map
+                        val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                        // Parse teh step instructions
+                        val step = steps.getJSONObject(i).getString("html_instructions")
+                        val dist = steps.getJSONObject(i).getJSONObject("distance").getString("text")
+
+                        // Add the values to the list
+                        path.add(PolyUtil.decode(points))
+                        instructions.add(step)
+                        distances.add(dist)
+                    }
+                    didComplete = true
                 }
-               didComplete = true
-            }, Response.ErrorListener {
-                    _ ->
-               didComplete = false
-            }){}
+            }, Response.ErrorListener { _ ->
+                didComplete = false
+            }) {}
 
         // Add the request to a Volley request Queue
         val requestQueue = Volley.newRequestQueue(parentActivity.get())
@@ -67,6 +68,7 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
         // Sleep the thread because the json request runs in a seperate thread and will not finish in time
         Thread.sleep(1000)
+
         return didComplete
     }
 
@@ -77,7 +79,7 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
         if (result == true) {
             // Log the request url cause I want to see it
-            Log.e("Async", directionsRequest.toString())
+            Log.i("Async", directionsRequest.toString())
 
             // This should get all values form the instructions list to an array
             activity!!.instructions = Array<String>(instructions.size){
