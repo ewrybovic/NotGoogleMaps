@@ -22,6 +22,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var task: GetDirectionsTask
     private var firstLocation: String = ""
     private var secondLocation: String = ""
+    private lateinit var firstLatLng: LatLng
+    private lateinit var secondLatLng: LatLng
+
+    private lateinit var geocoder: Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         Toast.makeText(this, "Loading Please Wait.", Toast.LENGTH_SHORT).show()
 
         // Geocoder tanslates an address to a latitude and longitude location
-        val geocoder = Geocoder(this, Locale.getDefault())
+        geocoder = Geocoder(this, Locale.getDefault())
 
         // Run the geocoder api in seperate thread
         doAsync{
@@ -57,31 +61,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val secondAddress = secondAddressList.get(0)
 
                 // Extract lat and long coordinates
-                val firstLatLng = LatLng(firstAddress.latitude, firstAddress.longitude)
-                val secondLatLng = LatLng(secondAddress.latitude, secondAddress.longitude)
+                firstLatLng = LatLng(firstAddress.latitude, firstAddress.longitude)
+                secondLatLng = LatLng(secondAddress.latitude, secondAddress.longitude)
 
                 // Create the bounds from the LatLng vars
-                val builder: LatLngBounds.Builder = LatLngBounds.Builder()
-                builder.include(firstLatLng)
-                builder.include(secondLatLng)
-                val bounds = builder.build()
+                val bounds = makeBounds()
 
                 // Threadsafe call to move the map
                 uiThread {
-                    Toast.makeText(this@MapsActivity, "Zooming to Location", Toast.LENGTH_SHORT ).show()
+                    setMap(bounds)
 
-                    // Add Markers
-                    googleMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
-                    googleMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
+                    // Set the onclick lstener only if we get this far
+                    googleMap.setOnMapClickListener {
+                        onMapClick(it)
+                    }
 
-                    // margin between end of screen and the bounds
-                    val padding = 155
-
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
-
-                    // Get the directions in an AsyncTask won't work in anko
-                    task = GetDirectionsTask(this@MapsActivity)
-                    task.execute(createUrlDirection(firstLatLng, secondLatLng))
+                    googleMap.setOnMapLongClickListener{
+                        onMapLongClick(it)
+                    }
                 }
             }
             else{
@@ -116,6 +113,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
     // Creates the url for the directions, not the best way lol
     fun createUrlDirection(origin: LatLng, dest: LatLng): String{
         var urlDirection = "https://maps.googleapis.com/maps/api/directions/json?origin="
@@ -125,5 +123,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         urlDirection += dest.longitude.toString() + "&key="
         urlDirection += getString(R.string.google_maps_key)
         return urlDirection
+    }
+
+    private fun makeBounds(): LatLngBounds{
+        val builder: LatLngBounds.Builder = LatLngBounds.Builder()
+        builder.include(firstLatLng)
+        builder.include(secondLatLng)
+        return builder.build()
+    }
+
+    // Moves the map and zoom in to the correct bounds
+    private fun setMap(bounds: LatLngBounds){
+        Toast.makeText(this, "Zooming to Location", Toast.LENGTH_SHORT ).show()
+
+        // Add Markers
+        googleMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
+        googleMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
+
+        // margin between end of screen and the bounds
+        val padding = 155
+
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+
+        // Get the directions in an AsyncTask won't work in anko
+        task = GetDirectionsTask(this)
+        task.execute(createUrlDirection(firstLatLng, secondLatLng))
+    }
+
+    private fun onMapClick(newSecondLatLng: LatLng){
+        // Clear the map of all markers
+        googleMap.clear()
+        secondLatLng = newSecondLatLng
+        secondLocation = newSecondLatLng.toString()
+        setMap(makeBounds())
+    }
+
+    private fun onMapLongClick(newFirstLatLng: LatLng){
+        googleMap.clear()
+        firstLatLng = newFirstLatLng
+        firstLocation = newFirstLatLng.toString()
+        setMap(makeBounds())
+
     }
 }
