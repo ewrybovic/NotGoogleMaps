@@ -20,6 +20,7 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
     private var path: MutableList<List<LatLng>> = ArrayList()
     private var instructions: MutableList<String> = ArrayList()
+    private var distances: MutableList<String> = ArrayList()
     private val parentActivity: WeakReference<MapsActivity>
     private lateinit var steps: JSONArray
     private lateinit var directionsRequest: StringRequest
@@ -47,10 +48,12 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
                     val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
                     // Parse teh step instructions
                     val step = steps.getJSONObject(i).getString("html_instructions")
+                    val dist = steps.getJSONObject(i).getJSONObject("distance").getString("text")
 
                     // Add the values to the list
                     path.add(PolyUtil.decode(points))
                     instructions.add(step)
+                    distances.add(dist)
                 }
                didComplete = true
             }, Response.ErrorListener {
@@ -78,7 +81,7 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
 
             // This should get all values form the instructions list to an array
             activity!!.instructions = Array<String>(instructions.size){
-                i: Int -> "Step " +(i+1).toString() + ": " + instructions[i]
+                i: Int -> "Step " +(i+1).toString() + ": " + instructions[i] + " for " + distances[i]
             }
 
             // Add the polylines to the map

@@ -24,7 +24,7 @@ class StepsActivity : AppCompatActivity() {
             val textView: TextView = TextView(this)
 
             // remove the html tags from the string
-            textView.text = Html.fromHtml(array[i]).toString()
+            textView.text = Html.fromHtml(array[i]).toString().replace("\n", " ").trim()
             textView.textSize = 20.0F
             stepsActivityLayout.addView(textView)
 
