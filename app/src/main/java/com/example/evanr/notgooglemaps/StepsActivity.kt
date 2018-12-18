@@ -34,5 +34,8 @@ class StepsActivity : AppCompatActivity() {
             view.setBackgroundColor(Color.parseColor("#B3B3B3"))
             stepsActivityLayout.addView(view)
         }
+
+        // Inset a blank TextVew because the scrollview will cut off the last TextView
+        stepsActivityLayout.addView(TextView(this))
     }
 }
