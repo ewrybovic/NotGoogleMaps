@@ -25,8 +25,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var firstLatLng: LatLng
     private lateinit var secondLatLng: LatLng
 
-    private lateinit var geocoder: Geocoder
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -46,10 +44,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         this.googleMap = googleMap
         Toast.makeText(this, "Loading Please Wait.", Toast.LENGTH_SHORT).show()
 
-        // Geocoder tanslates an address to a latitude and longitude location
-        geocoder = Geocoder(this, Locale.getDefault())
+        // Geocoder translates an address to a latitude and longitude location
+        val geocoder = Geocoder(this, Locale.getDefault())
 
-        // Run the geocoder api in seperate thread
+        // Run the geocoder api in separate thread
         doAsync{
 
             // getFromLocation returns in json format
@@ -69,9 +67,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 // Threadsafe call to move the map
                 uiThread {
-                    setMap(bounds)
+                    setMap()
 
-                    // Set the onclick lstener only if we get this far
+                    // Set the onclick listeners only if we get this far
                     googleMap.setOnMapClickListener {
                         onMapClick(it)
                     }
@@ -133,17 +131,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // Moves the map and zoom in to the correct bounds
-    private fun setMap(bounds: LatLngBounds){
+    private fun setMap(){
         Toast.makeText(this, "Zooming to Location", Toast.LENGTH_SHORT ).show()
 
         // Add Markers
-        googleMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation))
+        googleMap.addMarker(MarkerOptions().position(firstLatLng).title(firstLocation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
         googleMap.addMarker(MarkerOptions().position(secondLatLng).title(secondLocation))
 
         // margin between end of screen and the bounds
         val padding = 155
 
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+        // Move the camera to the bounding location
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(makeBounds(), padding))
 
         // Get the directions in an AsyncTask won't work in anko
         task = GetDirectionsTask(this)
@@ -155,14 +154,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap.clear()
         secondLatLng = newSecondLatLng
         secondLocation = newSecondLatLng.toString()
-        setMap(makeBounds())
+        setMap()
     }
 
     private fun onMapLongClick(newFirstLatLng: LatLng){
+        // Clear the map of all markers
         googleMap.clear()
         firstLatLng = newFirstLatLng
         firstLocation = newFirstLatLng.toString()
-        setMap(makeBounds())
-
+        setMap()
     }
 }
