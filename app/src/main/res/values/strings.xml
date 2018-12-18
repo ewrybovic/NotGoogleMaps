@@ -4,4 +4,7 @@
     <string name="enter_second_location">Enter Second location</string>
     <string name="title_activity_maps">Map</string>
     <string name="go">Go</string>
+    <string name="steps">Steps</string>
+    <string name="irvine_ca">Irvine, CA</string>
+    <string name="_800_n_state_college_blvd_fullerton_ca">800 N State College Blvd Fullerton, CA</string>
 </resources>

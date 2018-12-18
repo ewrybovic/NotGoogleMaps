@@ -75,8 +75,11 @@ class GetDirectionsTask (parentActivity: MapsActivity) : AsyncTask<String, Void,
         if (result == true) {
             // Log the request url cause I want to see it
             Log.e("Async", directionsRequest.toString())
-            
-            activity!!.instructions = instructions
+
+            // This should get all values form the instructions list to an array
+            activity!!.instructions = Array<String>(instructions.size){
+                i: Int -> "Step " +(i+1).toString() + ": " + instructions[i]
+            }
 
             // Add the polylines to the map
             for (i in 0 until path.size) {
